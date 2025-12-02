@@ -65,21 +65,21 @@ class bst {
     node* balnode(node* n) {
         int b = getbal(n);
 
-        // LL Case
+        // LL
         if (b > 1 && getbal(n->left) >= 0)
             return rr(n);
 
-        // LR Case
+        // LR
         if (b > 1 && getbal(n->left) < 0) {
             n->left = rl(n->left);
             return rr(n);
         }
 
-        // RR Case
+        // RR
         if (b < -1 && getbal(n->right) <= 0)
             return rl(n);
 
-        // RL Case
+        // RL
         if (b < -1 && getbal(n->right) > 0) {
             n->right = rr(n->right);
             return rl(n);
@@ -88,17 +88,15 @@ class bst {
         return n;
     }
 
-    // Correct insertion
+    // Insertion
     node* insert(node* r, int v) {
         if (r == NULL)
             return new node(v);
 
         if (v < r->val)
             r->left = insert(r->left, v);
-
         else if (v > r->val)
             r->right = insert(r->right, v);
-
         else
             return r;
 
@@ -106,7 +104,7 @@ class bst {
         return balnode(r);
     }
 
-    // Min value node
+    // Find min on right subtree
     node* minval(node* r) {
         node* temp = r;
         while (temp->left != NULL)
@@ -121,25 +119,37 @@ class bst {
 
         if (v < r->val)
             r->left = removeNode(r->left, v);
-
         else if (v > r->val)
             r->right = removeNode(r->right, v);
-
         else {
-            // One child or none
-            if (r->left == NULL || r->right == NULL) {
-                node* temp = r->left ? r->left : r->right;
 
+            // CASE 1 + CASE 2: Node with one child or none
+            if (r->left == NULL || r->right == NULL) {
+
+                node* temp;
+
+                // REPLACEMENT for ternary operator
+                if (r->left != NULL)
+                    temp = r->left;
+                else
+                    temp = r->right;
+
+                // No child
                 if (temp == NULL) {
                     temp = r;
                     r = NULL;
                 }
                 else {
-                    *r = *temp;
+                    // One child → copy child into r
+                    r->val = temp->val;
+                    r->left = temp->left;
+                    r->right = temp->right;
                 }
+
                 delete temp;
             }
             else {
+                // CASE 3: Two children
                 node* temp = minval(r->right);
                 r->val = temp->val;
                 r->right = removeNode(r->right, temp->val);
